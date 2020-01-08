@@ -6,12 +6,28 @@ void exit(int status)
     asm("syscall");
 }
 
+int _strlen(char *s)
+{
+    int slen = 0;
+
+    while (*s++ != '\0')
+        slen += 1;
+
+    return slen;
+}
+
 int puts(const char *s)
 {
     // preparation of arguments:
-    asm("mov rdi, 1");
+    //register int strlen asm("rdx") = _strlen(s);
+
+    asm("xor rdx, rdx");
+
+    for (char *ptr = s; *ptr != '\0'; ptr++)
+        asm("inc rdx");
+
     register const char *reg_s asm("rsi") = s;
-    asm("mov rdx, 12");
+    asm("mov rdi, 1");
 
     // 'write' syscall:
     asm("mov rax, 1");
