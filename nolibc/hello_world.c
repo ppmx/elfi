@@ -1,7 +1,7 @@
 void exit (int) __attribute__ ((noreturn));
 int puts(const char *);
 void _start () __attribute__ ((noreturn));
-
+int write(int, const void *, int);
 
 void exit(int status)
 {
@@ -16,25 +16,32 @@ void exit(int status)
 
 int puts(const char *s)
 {
-    // Syscall paramteres:
-    asm("mov rdi, 1");
-    asm("mov rsi, %0" : : "r"(s));
-    asm("xor rdx, rdx");
+    int strlen = 0;
 
     // Compute length of s and store length in rdx:
     for (char *ptr = (char *) s; *ptr != '\0'; ptr++)
-        asm("inc rdx");
+        strlen += 1;
 
-    // syscall write:
+    return write(1, s, strlen);
+}
+
+int write(int fildes, const void *buf, int nbyte)
+{
+    int ret;
+
+    asm("mov rdi, %0" : : "r"((long) fildes));
+    asm("mov rsi, %0" : : "r"(buf));
+    asm("mov rdx, %0" : : "r"((long) nbyte));
+
     asm("mov rax, 1");
     asm("syscall");
 
-    // puts must return a non-negative number on success:
-    return 0;
+    asm("mov %0, eax" : "=r" (ret));
+
+    return ret;
 }
 
 void _start()
 {
-    puts("hello world.\n");
-    exit(23);
+    exit(puts("hello world.\n"));
 }
