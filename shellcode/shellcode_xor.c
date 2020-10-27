@@ -1,21 +1,5 @@
 inline int write(int, const void *, int) __attribute__((always_inline));
 
-int write(int fildes, const void *buf, int nbyte)
-{
-    int ret;
-
-    asm("mov rdi, %0" : : "r"((long) fildes));
-    asm("mov rsi, %0" : : "r"(buf));
-    asm("mov rdx, %0" : : "r"((long) nbyte));
-
-    asm("mov rax, 1");
-    asm("syscall");
-
-    asm("mov %0, eax" : "=r" (ret));
-
-    return ret;
-}
-
 void _start()
 { 
     char string1[] = "uxprNyzayybtnqvrgnxzspsxxlrjozucarpqmE";
@@ -33,3 +17,20 @@ void _start()
         asm("syscall");
     }
 }
+
+int write(int fildes, const void *buf, int nbyte)
+{
+    int ret;
+
+    asm("mov rdi, %0" : : "r"((long) fildes));
+    asm("mov rsi, %0" : : "r"(buf));
+    asm("mov rdx, %0" : : "r"((long) nbyte));
+
+    asm("mov rax, 1");
+    asm("syscall");
+
+    asm("mov %0, eax" : "=r" (ret));
+
+    return ret;
+}
+

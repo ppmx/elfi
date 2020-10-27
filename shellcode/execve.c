@@ -1,5 +1,21 @@
 inline int execve(const char *path, char *const argv[], char *const envp[]) __attribute__((always_inline));
 
+#define NULL (void *) 0
+
+void _start()
+{
+    char *args[] = {"/bin/sh", NULL};
+
+    execve(args[0], args, NULL);
+
+    // exit(0):
+    for (;;) {
+        asm("xor rdi, rdi");
+        asm("mov rax, 60");
+        asm("syscall");
+    }
+}
+
 int execve(const char *path, char *const argv[], char *const envp[])
 {
     int ret;
@@ -16,19 +32,3 @@ int execve(const char *path, char *const argv[], char *const envp[])
     return ret;
 }
 
-
-#define NULL (void *) 0
-
-void _start()
-{
-    char *args[] = {"/bin/sh", NULL};
-
-    execve(args[0], args, NULL);
-
-    // exit(0):
-    for (;;) {
-        asm("xor rdi, rdi");
-        asm("mov rax, 60");
-        asm("syscall");
-    }
-}

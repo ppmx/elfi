@@ -2,6 +2,19 @@
 
 inline int write(int, const void *, int) __attribute__((always_inline));
 
+void _start()
+{
+	char s[] = "Hello world.\n";
+	write(1, s, STRLEN(s));
+
+	// exit(0):
+	for (;;) {
+		asm("xor rdi, rdi");
+		asm("mov rax, 60");
+		asm("syscall");
+	}
+}
+
 int write(int fildes, const void *buf, int nbyte)
 {
 	int ret;
@@ -18,16 +31,3 @@ int write(int fildes, const void *buf, int nbyte)
 	return ret;
 }
 
-void _start()
-{
-	char s[] = "Hello world.\n";
-
-	write(1, s, STRLEN(s));
-
-	// exit(0):
-	for (;;) {
-		asm("xor rdi, rdi");
-		asm("mov rax, 60");
-		asm("syscall");
-	}
-}
